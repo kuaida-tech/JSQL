@@ -21,7 +21,7 @@ JSQL是快搭平台为了能方便AI自动生成系统，借助JSON的编写规�
 <dependency>
     <groupId>tech.kuaida</groupId>
     <artifactId>JSQL</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 ### 操作便捷
