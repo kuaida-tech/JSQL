@@ -30,7 +30,7 @@ JSQL的最大特点是直接将JSON对象进行解析，然后按照一定的格
 现在我们有三个业务模型实体类：<a href="https://github.com/kuaida-tech/JSQL/blob/main/example/src/modules/customer/Customer.java">customer(客户)</a>、<a href="https://github.com/kuaida-tech/JSQL/blob/main/example/src/modules/salesperson/Salesperson.java">salesperson(销售员)</a>和<a href="https://github.com/kuaida-tech/JSQL/blob/main/example/src/modules/transaction/Transaction.java">transaction(交易数据)</a>，我们想获取系统类所有销售员，以及销售员所关联的客户信息。我们将采用下面的JSON对象来生成查询SQL
 
 #### JSON代码
-```json
+```
 {
     salesperson: {
         name: null,
@@ -72,7 +72,7 @@ LEFT JOIN customer AS customer ON salesperson.id = customer.salesperson_id
 ### 字段获取
 上面简单的示例中已经描述过了关于对象字段是怎么获取的，这里我们再进行一次详细的介绍:
 1、JSON对象名与JPA实体类同名，首字母小写。在JSON对象中带上想要获取的字段名称，例如销售员有name、email、phone三个字段，以及一个salespersonIdCustomer关联关系
-```json
+```
 //获取所有销售员姓名
 {
     salesperson: {
@@ -80,7 +80,7 @@ LEFT JOIN customer AS customer ON salesperson.id = customer.salesperson_id
     }
 }
 ```
-```json
+```
 //获取所有销售员姓名以及与其关联的客户姓名和客户联系电话
 {
     salesperson: {
@@ -96,7 +96,7 @@ LEFT JOIN customer AS customer ON salesperson.id = customer.salesperson_id
 ### 字段指令
 快搭JSQL中JSQL所谓的指令是指在字段获取的同时，针对当前字段做出特殊处理。指令是由字段名称 + $ + 指令构成，以对字段别名(重命名)为例:
 JSON数据:
-```json
+```
 {
     salesperson: {
         name$AsalespersonName: null,
@@ -115,7 +115,7 @@ FROM
 可根据生产的SQL看出，salesperson的name字段用上了SQL的alias语法，将结果字段名指定成了salesperson.salespersonName。快搭JSQL现已支持的指令如下：
 
 「$A」对应SQL中的Alias(别名):
-```json
+```
 {
     salesperson: {
         name$AsalespersonName: null,
@@ -133,7 +133,7 @@ FROM
 ```
 「$F」调用MYSQL部分内置函数，针对有参数的函数可用「__」两根下划线来进行分隔:
 1、带参(数字)函数调用
-```json
+```
 {
     salesperson: {
         name$FSUBSTRING__1__5: null,
@@ -150,7 +150,7 @@ FROM
 ```
 
 2、带参(字符串)函数调用
-```json
+```
 {
     salesperson: {
         name$FREPLACE__'123'__'hello': null,
@@ -167,7 +167,7 @@ FROM
 ```
 
 3、字段参与函数调用
-```json
+```
 {
     salesperson: {
         name$FCONCAT__email: null,
@@ -187,7 +187,7 @@ FROM
 ```
 
 「$G」等同于Sql的GROUP BY:
-```json
+```
 {
     salesperson: {
         name$G: null,
@@ -211,7 +211,7 @@ GROUP BY
 ```
 
 「$S」指定字段排序，其后跟ASC或DESC来决定是升序还是降序:
-```json
+```
 {
     salesperson: {
         name$SASC: null,
@@ -234,7 +234,7 @@ ORDER BY
 JSQL所谓的查询指令就是指在获取目标数据时带上额外的查询条件，从而过滤掉多余的信息，只获取符合条件的相关数据
 
 「$HAVING」为聚合数据进行过滤:
-```json
+```
 {
     customer: {
         name: null,
@@ -263,7 +263,7 @@ HAVING
 ```
 
 「$AND」和运算、「$OR」或运算:
-```json
+```
 {
     customer: {
         name: null,
@@ -298,7 +298,7 @@ $NOTLIKE | 模糊匹配
 ### 关联查询
 在日常操作中，我们还经常遇到需要对来自两个或多个表的数据，通过基于一个或多个相关列之间的关系将它们连接在一起进行查询
 「$JI」等同于Sql的INNER JOIN内连接:
-```json
+```
 {
     salesperson: {
         name: null,
