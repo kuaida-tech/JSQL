@@ -18,7 +18,7 @@ import java.util.List;
 public final class Predicates {
 
     /**
-     * Returns a predicate that does not constrain the result set.
+     * @return  a predicate that does not constrain the result set.
      */
     public static Predicate all() {
         return is("true");
@@ -32,6 +32,7 @@ public final class Predicates {
      *            SQL numeric expression to check.
      * @param bits
      *            Integer containing the bits for which to check.
+     * @return Predicate
      */
     public static Predicate allBitsSet(final String expr, final long bits) {
         return new Predicate() {
@@ -47,14 +48,16 @@ public final class Predicates {
     }
 
     /**
-     * Joins a series of predicates with AND.
+     * @param predicates Joins a series of predicates with AND.
+     * @return Predicate
      */
     public static Predicate and(Predicate... predicates) {
         return join("and", Arrays.asList(predicates));
     }
 
     /**
-     * Joins a series of predicates with AND.
+     * @param predicates Joins a series of predicates with AND.
+     * @return Predicate
      */
     public static Predicate and(List<Predicate> predicates) {
         return join("and", predicates);
@@ -68,6 +71,7 @@ public final class Predicates {
      *            SQL numeric expression to check.
      * @param bits
      *            Integer containing the bits for which to check.
+     * @return Predicate
      */
     public static Predicate anyBitsSet(final String expr, final long bits) {
         return new Predicate() {
@@ -89,6 +93,8 @@ public final class Predicates {
      *            SQL expression to be compared for equality.
      * @param value
      *            Value to which the SQL expression is compared.
+     *
+     * @return Predicate
      */
     public static Predicate eq(final String expr, final Object value) {
         return new Predicate() {
@@ -111,6 +117,7 @@ public final class Predicates {
      *            SQL expression to be tested for inclusion.
      * @param values
      *            Values for the IN clause.
+     * @return Predicate
      */
     public static Predicate in(final String expr, final List<?> values) {
 
@@ -154,13 +161,14 @@ public final class Predicates {
      *            SQL expression to be tested for inclusion.
      * @param values
      *            Values for the IN clause.
+     * @return Predicate
      */
     public static Predicate in(final String expr, final Object... values) {
         return in(expr, Arrays.asList(values));
     }
 
     /**
-     * Returns a predicate that takes no parameters. The given SQL expression is
+     * @return  a predicate that takes no parameters. The given SQL expression is
      * used directly.
      *
      * @param sql
@@ -214,6 +222,8 @@ public final class Predicates {
      *
      * @param table
      *            Table that forms the basis of the sub-select.
+     *
+     * @return ExistsPredicate
      */
     public static ExistsPredicate exists(String table) {
         return new ExistsPredicateImpl(table);
@@ -226,6 +236,8 @@ public final class Predicates {
      *            SQL expression to be compared for equality.
      * @param value
      *            Value to which the SQL expression is compared.
+     *
+     * @return Predicate
      */
     public static Predicate neq(final String expr, final Object value) {
         return new Predicate() {
@@ -247,6 +259,8 @@ public final class Predicates {
      *
      * @param childPredicate
      *            Predicate whose sense is to be inverted.
+     *
+     * @return Predicate
      */
     public static Predicate not(final Predicate childPredicate) {
         return new Predicate() {
@@ -260,14 +274,16 @@ public final class Predicates {
     }
 
     /**
-     * Joins a series of predicates with OR.
+     * @param predicates Joins a series of predicates with OR.
+     * @return Predicate
      */
     public static Predicate or(Predicate... predicates) {
         return join("or", Arrays.asList(predicates));
     }
 
     /**
-     * Joins a series of predicates with OR.
+     * @param predicates Joins a series of predicates with OR.
+     * @return Predicate
      */
     public static Predicate or(List<Predicate> predicates) {
         return join("or", predicates);

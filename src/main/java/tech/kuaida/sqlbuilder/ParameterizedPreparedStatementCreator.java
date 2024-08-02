@@ -166,7 +166,7 @@ public class ParameterizedPreparedStatementCreator implements Cloneable, Prepare
     }
 
     /**
-     * Returns the SQL with parameter values interpolated. This SQL should be
+     @return  SQL with parameter values interpolated. This SQL should be
      * only used for debugging and should NOT be executed by your application.
      * To discourage this, the returned SQL is prefixed with "--".
      */

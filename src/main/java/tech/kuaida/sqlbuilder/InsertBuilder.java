@@ -38,6 +38,7 @@ public class InsertBuilder extends AbstractSqlBuilder implements Serializable {
      *            provide the single quotes and escape the internal quotes. It
      *            is more common to use a question mark or a token in the style
      *            of {@link ParameterizedPreparedStatementCreator}, e.g. ":foo".
+     * @return InsertBuilder
      */
     public InsertBuilder set(String column, String value) {
         columns.add(column);

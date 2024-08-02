@@ -9,17 +9,14 @@ import javax.sql.DataSource;
 public interface Dialect {
 
     /**
-     * Returns a SQL statement that returns the number of rows that would be
-     * returned by another select.
      *
-     * @param sql
-     *            Inner select statement, i.e. the one that returns the rows
-     *            themselves.
+     * @param sql Inner select statement, i.e. the one that returns the rows themselves.
+     * @return a SQL statement that returns the number of rows that would be returned by another select
      */
     public String createCountSelect(String sql);
 
     /**
-     * Returns a SQL statement that returns a limited number of rows from an
+     * @return a SQL statement that returns a limited number of rows from an
      * inner query. Note that the inner select should include an ORDER BY clause
      * that strictly orders the result set; otherwise, some database servers may
      * return pages inconsistently.
@@ -34,7 +31,7 @@ public interface Dialect {
     public String createPageSelect(String sql, int limit, int offset);
 
     /**
-     * Returns an integer supplier representing a database sequence.
+     * @return  an integer supplier representing a database sequence.
      *
      * @param dataSource
      *            DataSource where the sequence exists.

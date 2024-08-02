@@ -3,8 +3,8 @@ package tech.kuaida.utils;
 public class NcStringUtils {
     /**
      * 下划线转驼峰
-     * user_name  ---->  userName
-     * userName   --->  userName
+     * user_name  to  userName
+     * userName   to  userName
      *
      * @param underlineStr 带有下划线的字符串
      * @return 驼峰字符串
@@ -36,8 +36,8 @@ public class NcStringUtils {
 
     /**
      * 驼峰转 下划线
-     * userName  ---->  user_name
-     * user_name  ---->  user_name
+     * userName  to  user_name
+     * user_name  to  user_name
      *
      * @param camelCaseStr 驼峰字符串
      * @return 带下滑线的String

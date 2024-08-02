@@ -11,7 +11,9 @@ import tech.kuaida.sqlbuilder.orm.FieldInfo;
 import tech.kuaida.utils.NcStringUtils;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -122,7 +124,7 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
 
             String tableName = dbBuilder.getClassInfo("_table", command, null);
 
-            from(tableName + " AS " + command.getAlias());
+            from(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()));
             dbBuilder.fromBuilder(command, this, jsonObject.getJSONObject(key));
         }
     }
@@ -172,7 +174,15 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
 
     public SelectBuilder column(DbCommand command, String name, String alias) {
         if (StringUtils.isNotEmpty(command.getFunction())) {
-            columns.add(command.getFunction() + "(" + name + ") AS \"" + alias + "\"");
+            String parameters = "";
+
+            if (command.getParameters() != null) {
+                for (int i = 0; i < command.getParameters().size(); i++) {
+                    parameters = parameters + "," + command.getParameters().get(i);
+                }
+            }
+
+            columns.add(command.getFunction() + "(" + name + parameters + ") AS \"" + alias + "\"");
         } else if (command.isIgnore() == false) {
             columns.add(name + " AS \"" + alias + "\"");
         }
@@ -307,6 +317,7 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
      * @param ascending
      *                  If true, specifies the direction "asc", otherwise, specifies
      *                  the direction "desc".
+     * @return SelectBuilder
      */
     public SelectBuilder orderBy(String name, boolean ascending) {
         if (ascending) {
@@ -414,17 +425,17 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
                                             if (!keywords[i].trim().equals("")) {
                                                 this.where(table + "." + columnName + " like '%" + keywords[i] + "%'"
                                                         + (count < keywords.length ? " " + keywords[keywords.length - 1]
-                                                                : ""));
+                                                        : ""));
                                             }
                                         }
                                     }
                                 }
-                                    break;
+                                break;
                                 case "Integer":
                                 case "Float": {
                                     this.where(table + "." + columnName + " = " + NcStringUtils.toUnderlineCase(where));
                                 }
-                                    break;
+                                break;
                                 case "Date": {
                                     if ("[".equals(where.substring(0, 1))
                                             && "]".equals(where.substring(where.length() - 1, where.length()))) {
@@ -441,12 +452,12 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
                                                 + NcStringUtils.toUnderlineCase(where) + "'");
                                     }
                                 }
-                                    break;
+                                break;
                                 default: {
                                     this.where(table + "." + columnName + " like '%"
                                             + NcStringUtils.toUnderlineCase(where) + "%'");
                                 }
-                                    break;
+                                break;
                             }
                         }
                     }
@@ -556,27 +567,45 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
      * with the result of the main query. The provided builder must have the
      * same columns as the parent select builder and must not use "order by" or
      * "for update".
+     *
+     * @param unionBuilder a "union" select builder
+     * @return SelectBuilder
      */
     public SelectBuilder union(SelectBuilder unionBuilder) {
         unions.add(unionBuilder);
         return this;
     }
 
+    /*
+     * @param expr a expression
+     * @return SelectBuilder
+     */
     public SelectBuilder where(String expr) {
         wheres.add(expr);
         return this;
     }
 
+    /*
+     * @param expr a expression
+     * @return SelectBuilder
+     */
     public SelectBuilder and(String expr) {
         ands.add(expr);
         return this;
     }
 
+    /*
+     * @param expr a expression
+     * @return SelectBuilder
+     */
     public SelectBuilder or(String expr) {
         ors.add(expr);
         return this;
     }
 
+    /*
+     * @return List<Object>
+     */
     public List<Object> getColumns() {
         return columns;
     }

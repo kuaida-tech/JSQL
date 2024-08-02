@@ -8,7 +8,8 @@ import java.util.List;
 public final class ReflectionUtils {
 
     /**
-     * Returns an array of all declared fields in the given class and all
+     * @param clazz clazz
+     * @return  an array of all declared fields in the given class and all
      * super-classes.
      */
     public static Field[] getDeclaredFieldsInHierarchy(Class<?> clazz) {
@@ -33,7 +34,7 @@ public final class ReflectionUtils {
     }
 
     /**
-     * Returns the Field for a given parent class and a dot-separated path of
+     * @return  Field for a given parent class and a dot-separated path of
      * field names.
      *
      * @param clazz
@@ -81,6 +82,7 @@ public final class ReflectionUtils {
      *            Object containing the field.
      * @param fieldName
      *            Name of the field whose value to return.
+     * @return Object
      */
     public static Object getFieldValue(Object object, String fieldName) {
         try {
@@ -93,7 +95,7 @@ public final class ReflectionUtils {
     }
 
     /**
-     * Returns the value of a field identified using a path from the parent.
+     @return  value of a field identified using a path from the parent.
      *
      * @param object
      *            Parent object.
@@ -147,8 +149,7 @@ public final class ReflectionUtils {
     }
 
     /**
-     * Returns the value of a field identified using a path from the parent.
-     *
+     * value of a field identified using a path from the parent.
      *
      * @param object
      *            Parent object.

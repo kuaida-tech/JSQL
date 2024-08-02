@@ -27,20 +27,20 @@ public class DbBuilder {
     private Map<String, Map<String, Map<String, String>>> classInfo; //保存类相关信息
 
     /**
-     * @param modulesPath 模块所在的包路径，例如: tech.kuaida.modules
+     * @param modulesPath 模块所在的包路径，例如: tech.tech.kuaida.modules
      * */
     public DbBuilder(String modulesPath) {
         this.modulesPath = modulesPath;
         classInfo = new HashMap<>();
     }
 
-    public Page<Map<String, Object>> subQuery(EntityManager entityManager, Map<String, Map<String, Map<String, String>>> classInfo, String parentId, DbCommand parentCommand, DbCommand command, Map map, net.sf.json.JSONObject jsonObject) {
+    public Page<Map<String, Object>> subQuery(EntityManager entityManager, Map<String, Map<String, Map<String, String>>> classInfo, String parentId, DbCommand parentCommand, DbCommand command, Map map, JSONObject jsonObject) {
         SelectBuilder selectBuilder = new SelectBuilder();
 
         buildClassInfo(command, null);
         String tableName = getClassInfo("_table", command, null);
 
-        selectBuilder.from(tableName + " AS " + command.getAlias());
+        selectBuilder.from(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()));
 
         if (!jsonObject.containsKey("id")) {
             jsonObject.put("id", "");
@@ -48,7 +48,7 @@ public class DbBuilder {
 
         Iterator<String> iterator = jsonObject.keySet().iterator();
 
-        net.sf.json.JSONObject waitJson = new net.sf.json.JSONObject();
+        JSONObject waitJson = new JSONObject();
 
         int page = 0;
         int size = Integer.MAX_VALUE;
@@ -71,7 +71,7 @@ public class DbBuilder {
                 whereBuilder(command, selectBuilder, key, key, jsonObject.getJSONObject(key), true);
             } else if (key.equals("$OR") || key.equals("$AND")) {
                 whereBuilder(command, selectBuilder, key, key, jsonObject.getJSONObject(key), false);
-            } else if (jsonObject.get(key) instanceof net.sf.json.JSONObject) {
+            } else if (jsonObject.get(key) instanceof JSONObject) {
                 waitJson.put(key, jsonObject.getJSONObject(key));
                 if (getClassInfo( "_relationship", command, fieldCommand) != null) {
                     String relationship = getClassInfo("_relationship", command, fieldCommand);
@@ -89,7 +89,7 @@ public class DbBuilder {
                 }
             } else {
                 if (getClassInfo("_column", command, fieldCommand) != null) {
-                    selectBuilder.column(fieldCommand, command.getCode() + "." + getClassInfo("_column", command, fieldCommand), fieldCommand.getAlias());
+                    selectBuilder.column(fieldCommand, command.getCode() + "." + getClassInfo("_column", command, fieldCommand), (fieldCommand.getAlias() != null?command.getAlias():command.getCode()));
                 }
             }
         }
@@ -129,7 +129,7 @@ public class DbBuilder {
         BigInteger total = (BigInteger) entityManager.createNativeQuery(selectBuilder.toCountString()).getSingleResult();
 
         if (map != null) {
-            map.put( command.getAlias(), list);
+            map.put( (command.getAlias() != null?command.getAlias():command.getCode()), list);
         }
 
         for (int i = 0; i < list.size(); i++) {
@@ -229,25 +229,29 @@ public class DbBuilder {
 
                     switch (fieldCommand.getJoinType()) {
                         case 1:
-                            selectBuilder.join(tableName + " AS " + command.getAlias() + " ON " + command.getCode() + "." + getClassInfo("_column", command, fieldCommand) + " = " + fieldCommand.getJoinFiled());
+                            selectBuilder.join(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()) + " ON " + command.getCode() + "." + getClassInfo("_column", command, fieldCommand) + " = " + fieldCommand.getJoinFiled());
                             break;
                         case 2:
-                            selectBuilder.leftJoin(tableName + " AS " + command.getAlias(),command.getCode() + "." + getClassInfo("_column", command, fieldCommand) + " = " + fieldCommand.getJoinFiled());
+                            selectBuilder.leftJoin(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()),command.getCode() + "." + getClassInfo("_column", command, fieldCommand) + " = " + fieldCommand.getJoinFiled());
                             break;
                         case 3:
-                            selectBuilder.rightJoin(tableName + " AS " + command.getAlias(),command.getCode() + "." + getClassInfo("_column", command, fieldCommand) + " = " + fieldCommand.getJoinFiled());
+                            selectBuilder.rightJoin(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()),command.getCode() + "." + getClassInfo("_column", command, fieldCommand) + " = " + fieldCommand.getJoinFiled());
                             break;
                         case 4:
-                            selectBuilder.innerJoin(tableName + " AS " + command.getAlias(),command.getCode() + "." + getClassInfo("_column", command, fieldCommand) + " = " + fieldCommand.getJoinFiled());
+                            selectBuilder.innerJoin(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()),command.getCode() + "." + getClassInfo("_column", command, fieldCommand) + " = " + fieldCommand.getJoinFiled());
                             break;
                         case 5:
-                            selectBuilder.fullJoin(tableName + " AS " + command.getAlias(),command.getCode() + "." + getClassInfo("_column", command, fieldCommand) + " = " + fieldCommand.getJoinFiled());
+                            selectBuilder.fullJoin(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()),command.getCode() + "." + getClassInfo("_column", command, fieldCommand) + " = " + fieldCommand.getJoinFiled());
                             break;
                     }
                 }
 
                 if (getClassInfo("_column", command, fieldCommand) != null) {
-                    selectBuilder.column(fieldCommand, command.getCode() + "." + getClassInfo( "_column", command, fieldCommand), getClassInfo( "_level", command, null) + "." + fieldCommand.getAlias());
+                    if (fieldCommand.getAlias() != null) {
+                        selectBuilder.column(fieldCommand, command.getCode() + "." + getClassInfo( "_column", command, fieldCommand), fieldCommand.getAlias());
+                    } else {
+                        selectBuilder.column(fieldCommand, command.getCode() + "." + getClassInfo( "_column", command, fieldCommand), getClassInfo( "_level", command, null) + "." + fieldCommand.getCode());
+                    }
                 }
             }
         }
@@ -399,7 +403,7 @@ public class DbBuilder {
         sb.append(" )");
 
         if (isHaving) {
-             selectBuilder.having(sb.toString());
+            selectBuilder.having(sb.toString());
         } else {
             if (superiorCondition != null) {
                 if (superiorCondition.equals("$OR")) {
@@ -465,7 +469,7 @@ public class DbBuilder {
                     JoinColumn joinColumnAnnotation = field.getAnnotation(JoinColumn.class);
                     String parentType = getClassInfo( "_type", parentCommand, null);
                     if (field.getType().getSimpleName().equals(parentType)) {
-                        selectBuilder.leftJoin(tableName + " AS " + command.getAlias(), parentCommand.getCode() + ".id" + " = " + command.getCode()  + "." + joinColumnAnnotation.name());
+                        selectBuilder.leftJoin(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()), parentCommand.getCode() + ".id" + " = " + command.getCode()  + "." + joinColumnAnnotation.name());
                     }
                 }
 
@@ -475,7 +479,7 @@ public class DbBuilder {
                         javax.persistence.Table targetTableAnnotation = (javax.persistence.Table)targetClass.getAnnotation(javax.persistence.Table.class);
                         if (parentTableName.equals(targetTableAnnotation.name())) {
                             JoinColumn joinColumnAnnotation = field.getAnnotation(JoinColumn.class);
-                            selectBuilder.leftJoin(tableName + " AS " + command.getAlias(), parentCommand.getCode() + ".id" + " = " + command.getCode()  + "." + joinColumnAnnotation.name());
+                            selectBuilder.leftJoin(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()), parentCommand.getCode() + ".id" + " = " + command.getCode()  + "." + joinColumnAnnotation.name());
                             break;
                         }
                     } catch (ClassNotFoundException e) {
@@ -497,9 +501,9 @@ public class DbBuilder {
                                 javax.persistence.Column column = targetField.getAnnotation(javax.persistence.Column.class);
 
                                 if (joinColumn != null) {
-                                    selectBuilder.leftJoin(tableName + " AS " + command.getAlias(), parentCommand.getCode() + "." + joinColumn.name() + " = " + command.getAlias() + ".id");
+                                    selectBuilder.leftJoin(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()), parentCommand.getCode() + "." + joinColumn.name() + " = " + command.getAlias() + ".id");
                                 } else if (column != null) {
-                                    selectBuilder.leftJoin(tableName + " AS " + command.getAlias(), parentCommand.getCode() + "." + column.name() + " = " + command.getAlias() + ".id");
+                                    selectBuilder.leftJoin(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()), parentCommand.getCode() + "." + column.name() + " = " + command.getAlias() + ".id");
                                 }
 
                                 break;
@@ -522,7 +526,7 @@ public class DbBuilder {
                     if (typeName.equals(parentTypeName)) {
                         if (joinTable != null) {
                             selectBuilder.leftJoin(joinTable.name(), joinTable.name() + "." + joinTable.inverseJoinColumns()[0].name() + " = " + parentTableName + ".id");
-                            selectBuilder.leftJoin(tableName  + " AS " + command.getAlias(), joinTable.name() + "." + joinTable.joinColumns()[0].name() + " = " + command.getAlias() + ".id");
+                            selectBuilder.leftJoin(tableName  + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()), joinTable.name() + "." + joinTable.joinColumns()[0].name() + " = " + command.getAlias() + ".id");
                         } else {
                             String mappedBy = manyToManyAnnotation.mappedBy();
 
@@ -537,7 +541,7 @@ public class DbBuilder {
                                     javax.persistence.JoinTable joinTable1 = targetField.getAnnotation(javax.persistence.JoinTable.class);
 
                                     selectBuilder.leftJoin(joinTable1.name(), joinTable1.name() + "." + joinTable1.joinColumns()[0].name() + " = " + targetTableAnnotation.name() + ".id");
-                                    selectBuilder.leftJoin(tableName  + " AS " + command.getAlias(), joinTable1.name() + "." + joinTable1.inverseJoinColumns()[0].name() + " = " + command.getAlias() + ".id");
+                                    selectBuilder.leftJoin(tableName  + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()), joinTable1.name() + "." + joinTable1.inverseJoinColumns()[0].name() + " = " + command.getAlias() + ".id");
                                     break;
                                 }
                             }
@@ -566,7 +570,21 @@ public class DbBuilder {
             } else if (firstChar.equals("G")) {
                 command.setGroupBy(true);
             } else if (firstChar.equals("F")) {
-                command.setFunction(commands[i].substring(1));
+                String function = commands[i].substring(1);
+
+                if (function.indexOf("__") != -1) {
+                    String[] fun = function.split("__");
+                    command.setFunction(fun[0]);
+
+                    //放置function所需参数
+                    List<String> list = new ArrayList<>();
+                    for (int j = 1; j < fun.length; j++) {
+                        list.add(fun[j]);
+                    }
+                    command.setParameters(list);
+                } else {
+                    command.setFunction(function);
+                }
             } else if (firstChar.equals("S")) {
                 command.setSort(commands[i].substring(1));
             } else if (firstChar.equals("J")) {
@@ -658,7 +676,7 @@ public class DbBuilder {
                 map.put(field.getName(), fieldMap);
 
                 javax.persistence.Column columnAnnotation = field.getAnnotation(javax.persistence.Column.class);
-                javax.persistence.JoinColumn joinColumnAnnotation = field.getAnnotation(javax.persistence.JoinColumn.class);
+                JoinColumn joinColumnAnnotation = field.getAnnotation(JoinColumn.class);
 
                 javax.persistence.OneToOne oneToOneAnnotation = field.getAnnotation(javax.persistence.OneToOne.class);
                 javax.persistence.OneToMany oneToManyAnnotation = field.getAnnotation(javax.persistence.OneToMany.class);

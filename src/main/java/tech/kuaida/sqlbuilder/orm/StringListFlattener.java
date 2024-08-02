@@ -29,9 +29,7 @@ public class StringListFlattener {
     }
 
 
-    /**
-     * Splits the given string.
-     */
+    // Splits the given string.
     public List<String> split(String s) {
 
         List<String> result = new ArrayList<String>();
@@ -92,9 +90,7 @@ public class StringListFlattener {
         return result;
     }
 
-    /**
-     * Joins the given list into a single string.
-     */
+    //Joins the given list into a single string.
     public String join(List<String> list) {
 
         if (list == null) {

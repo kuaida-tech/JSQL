@@ -19,7 +19,7 @@ import java.util.List;
  * .column("salary")
  * .from("emp")
  * .whereEquals("id", employeeId)
- * .and("salary > :limit")
+ * .and("salary  :limit")
  * .setParameter("limit", 100000);
  *
  * new JdbcTemplate(dataSource).query(psc, new RowMapper() { ... });
@@ -69,7 +69,7 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
     }
 
     /**
-     * Returns a PreparedStatementCreator that returns a count of the rows that
+     * @return  a PreparedStatementCreator that returns a count of the rows that
      * this creator would return.
      *
      * @param dialect
@@ -150,7 +150,7 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
     }
 
     /**
-     * Returns a PreparedStatementCreator that returns a page of the underlying
+     * @return  a PreparedStatementCreator that returns a page of the underlying
      * result set.
      *
      * @param dialect

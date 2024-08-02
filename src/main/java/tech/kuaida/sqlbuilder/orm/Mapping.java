@@ -153,7 +153,7 @@ public class Mapping<T> {
         }
 
         /**
-         * Returns a single result from the query.
+         * @return  a single result from the query.
          *
          * @throws RowNotFoundException
          *             if the query returned zero rows
@@ -172,7 +172,7 @@ public class Mapping<T> {
         }
 
         /**
-         * Returns a single result from the query. If now matching records were
+         * @return  a single result from the query. If now matching records were
          * found, returns null.
          *
          * @throws TooManyRowsException
@@ -285,10 +285,8 @@ public class Mapping<T> {
         return this;
     }
 
-    /**
-     * Adds mappings for each declared field in the mapped class. Any fields
-     * already mapped by addColumn are skipped.
-     */
+    //Adds mappings for each declared field in the mapped class. Any fields
+    //already mapped by addColumn are skipped.
     public Mapping<T> addFields() {
 
         if (idColumn == null) {
@@ -309,7 +307,7 @@ public class Mapping<T> {
     /**
      * Creates a Delete object. You can add criteria to the Delete object,
      * finally calling the Delete
-     * @return
+     * @return Delete
      */
     public Delete beginDelete() {
         return new Delete();
@@ -318,6 +316,7 @@ public class Mapping<T> {
     /**
      * Creates instance of the entity class. This method is called to create the object
      * instances when returning query results.
+     *  @return T
      */
     protected T createInstance() {
         try {
@@ -340,7 +339,8 @@ public class Mapping<T> {
     }
 
     /**
-     * Creates a Query object returning rows matching the given predicate.
+     * @param predicate Creates a Query object
+     * @return rows matching the given predicate.
      */
     public Query findWhere(Predicate predicate) {
         return new Query().where(predicate);
@@ -368,6 +368,8 @@ public class Mapping<T> {
      *             If no such object was found.
      * @throws TooManyRowsException
      *             If more that one object was returned for the given ID.
+     * @param id id
+     * @return T
      */
     public T findById(Object id) throws RowNotFoundException, TooManyRowsException {
         return findWhere(eq(idColumn.getColumnName(), id)).getSingleResult();
@@ -385,6 +387,8 @@ public class Mapping<T> {
      *
      * @throws TooManyRowsException
      *             If more that one object was returned for the given ID.
+     * @param id id
+     * @return T
      */
     public T findByIdOrNull(Object id) throws TooManyRowsException {
         return findWhere(eq(idColumn.getColumnName(), id)).getSingleResultOrNull();
@@ -411,9 +415,7 @@ public class Mapping<T> {
         return converter.convertFieldValueToColumn(fieldValue);
     }
 
-    /**
-     * Returns the primary key value of the entity.
-     */
+
     public Object getPrimaryKey(T entity) {
         return ReflectionUtils.getFieldValue(entity, idColumn.getFieldName());
     }
@@ -433,6 +435,7 @@ public class Mapping<T> {
      *
      * @param fieldName
      *            Name of the field to ignore.
+     * @return Mapping ignored by a subsequent invocation of {@link #addFields()}.
      */
     public Mapping<T> ignoreField(String fieldName) {
         ignoredFields.add(fieldName);
@@ -442,6 +445,8 @@ public class Mapping<T> {
     /**
      * Insert entity object. The caller must first initialize the primary key
      * field.
+     * @param entity entity object
+     * @return T
      */
     public T insert(T entity) {
 
@@ -493,7 +498,8 @@ public class Mapping<T> {
     }
 
     /**
-     * Returns true if this entity's primary key is not null, and for numeric
+     * @param entity entity object
+     * @return  true if this entity's primary key is not null, and for numeric
      * fields, is non-zero.
      */
     private boolean hasPrimaryKey(T entity) {
@@ -508,6 +514,10 @@ public class Mapping<T> {
         return true;
     }
 
+    /**
+     * @param alias alias
+     * @return Mapping
+     * */
     public Mapping<T> setAlias(String alias) {
         this.alias = alias;
         return this;
@@ -544,9 +554,7 @@ public class Mapping<T> {
         return this;
     }
 
-    /**
-     * Updates value of entity in the table.
-     */
+    // Updates value of entity in the table.
     public T update(T entity) throws RowNotFoundException, OptimisticLockException {
 
         if (!hasPrimaryKey(entity)) {

@@ -7,7 +7,7 @@ package tech.kuaida.sqlbuilder.orm;
 public class Column {
 
     /**
-     * Returns the portion of the field name after the last dot, as field names
+     @return  portion of the field name after the last dot, as field names
      * may actually be paths.
      */
     private static String toColumnName(String fieldName) {

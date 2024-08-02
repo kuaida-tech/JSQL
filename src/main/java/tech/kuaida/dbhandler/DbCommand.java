@@ -1,5 +1,8 @@
 package tech.kuaida.dbhandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DbCommand {
     private String code;
     private String alias;
@@ -10,6 +13,7 @@ public class DbCommand {
     private String joinFiled;
     private boolean ignore = false;
     private boolean groupBy = false;
+    private List<String> parameters;
 
     public DbCommand() {
 
@@ -24,10 +28,7 @@ public class DbCommand {
     }
 
     public String getAlias() {
-        if (alias != null)
-            return alias;
-        else
-            return code;
+        return alias;
     }
 
     public void setAlias(String alias) {
@@ -88,5 +89,13 @@ public class DbCommand {
 
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+    public List<String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<String> parameters) {
+        this.parameters = parameters;
     }
 }

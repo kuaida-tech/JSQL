@@ -32,9 +32,7 @@ public abstract class AbstractSqlCreator implements PreparedStatementCreator, Se
     }
 
     /**
-     * Allocate and return a new parameter that is unique within this
-     * SelectCreator. The parameter is of the form "paramN", where N is an
-     * integer that is incremented each time this method is called.
+     * @return a new parameter that is unique within this SelectCreator.
      */
     public String allocateParameter() {
         return "param" + paramIndex++;
@@ -45,19 +43,21 @@ public abstract class AbstractSqlCreator implements PreparedStatementCreator, Se
     }
 
     /**
-     * Returns the builder for this creator.
+     * @return  builder for this creator.
      */
     protected abstract AbstractSqlBuilder getBuilder();
 
     /**
-     * Returns the prepared statement creator for this creator.
+     * @return  prepared statement creator for this creator.
      */
     protected ParameterizedPreparedStatementCreator getPreparedStatementCreator() {
         return ppsc;
     }
 
     /**
-     * Sets a parameter for the creator.
+     * @param name key
+     * @param value value
+     * @return AbstractSqlCreator
      */
     public AbstractSqlCreator setParameter(String name, Object value) {
         ppsc.setParameter(name, value);

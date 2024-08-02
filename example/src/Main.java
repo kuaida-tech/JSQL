@@ -3,7 +3,7 @@ import tech.kuaida.sqlbuilder.SelectBuilder;
 
 public class Main {
     public static void main(String[] args) {
-        String json = "{customer: {\"name\":\"\",\"salesperson\": {\"email\":\"\"}}}";
+        String json = "{salesperson: {name:null, phone:null}}";
 
         JSONObject jsonObject = JSONObject.fromObject(json);
 
