@@ -281,19 +281,16 @@ HAVING
 ```
 
 在上述示例中出现了$EQ、$GT这些指令，这些指令代表的具体含义如下:
-
-指令 | 含义
-- | -
-$EQ | 等于
-$NE | 不等于
-$GT | 大于
-$GE | 大于等于
-$LT | 小于
-$LE | 小于等于
-$ISNULL | 是否为空
-$NOTNULL | 不为空
-$LIKE | 模糊匹配
-$NOTLIKE | 模糊匹配
+- $EQ: 等于
+- $NE: 不等于
+- $GT: 大于
+- $GE: 大于等于
+- $LT: 小于
+- $LE: 小于等于
+- $ISNULL: 是否为空
+- $NOTNULL: 不为空
+- $LIKE: 模糊匹配
+- $NOTLIKE: 模糊匹配
 
 ### 关联查询
 在日常操作中，我们还经常遇到需要对来自两个或多个表的数据，通过基于一个或多个相关列之间的关系将它们连接在一起进行查询
@@ -327,10 +324,11 @@ FROM
 	salesperson AS salesperson
 	INNER JOIN customer AS customer ON customer.salesperson_id = salesperson.id
 ```
-同样JSQL也支持其他的关联查询指令
+同样JSQL也支持其他的关联查询指令:
+- $JL: LEFT JOIN 左连接
+- $JR: RIGHT JOIN 右连接
+- $JF: FULL OUTER JOIN 全连接
 
-指令 | 含义
-- | -
-$JL | LEFT JOIN 左连接
-$JR | RIGHT JOIN 右连接
-$JF | FULL OUTER JOIN 全连接
+## 期望 | Futures
+
+欢迎发issue提出更好的意见或提交PR，帮助完善项目
