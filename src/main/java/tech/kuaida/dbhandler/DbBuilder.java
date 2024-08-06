@@ -795,69 +795,6 @@ public class DbBuilder {
         return null;
     }
 
-    public List<Map<String, Object>> listToJSONArray(List<Map<String, Object>> list){
-        List<Map<String, Object>> array = new ArrayList<>();
-
-        if (list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                Map<String, Object> root = new HashMap<>();
-                array.add(root);
-
-                Map<String, Object> child = null;
-                Map<String, Object> lastObject = null;
-
-                Map map = list.get(i);
-
-                Iterator iter = map.keySet().iterator();
-                while (iter.hasNext()) {
-                    String key = String.valueOf(iter.next());
-                    String value = "";
-
-                    if (map.get(key) != null) {
-                        value = String.valueOf(map.get(key));
-                    }
-
-                    String[] split = key.split("\\.");
-
-                    if (split.length > 1) {
-                        //层级大于1级则进行遍历
-                        if (split.length > 2) {
-                            for (int j = 1; j < split.length; j++) {
-                                //第一级的Key放入到JSON的根层级下
-                                if (j == 1) {
-                                    //当前根目录是否存在该KEY
-                                    if (!root.containsKey(split[j])) {
-                                        //当前根目录未存在该Key，则创建一个JSON对象存入该Key中
-                                        child = new HashMap<>();
-                                        root.put(split[j], child);
-                                        lastObject = (Map<String, Object>) root.get(split[j]);
-                                    } else {
-                                        //根目录已存在该Key，则取出该Key所存储的JSON对象
-                                        lastObject = (Map<String, Object>) root.get(split[j]);
-                                    }
-                                } else if (j != split.length - 1) {
-                                    if (!lastObject.containsKey(split[j])) {
-                                        child = new HashMap<>();
-                                        lastObject.put(split[j], child);
-                                        lastObject = (Map<String, Object>) lastObject.get(split[j]);
-                                    } else {
-                                        //当前层级已有该Key，则直接取出该Key所映射的JSON对象
-                                        lastObject = (Map<String, Object>) lastObject.get(split[j]);
-                                    }
-                                } else {
-                                    lastObject.put(split[j], value);
-                                }
-                            }
-                        } else {
-                            root.put(split[1], value);
-                        }
-                    }
-                }
-            }
-        }
-        return array;
-    }
-
     public String[] matchExpression(String expression, String value) {
         String[] mExpression = new String[2];
         mExpression[1] = value;
