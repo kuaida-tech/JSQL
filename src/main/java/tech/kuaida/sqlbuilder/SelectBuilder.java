@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
-import tech.kuaida.dbhandler.DbBuilder;
 import tech.kuaida.dbhandler.DbCommand;
 import tech.kuaida.sqlbuilder.orm.ClassParser;
 import tech.kuaida.sqlbuilder.orm.FieldInfo;
@@ -110,23 +109,6 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
 
     public SelectBuilder() {
 
-    }
-
-    public SelectBuilder(String modulesPath, net.sf.json.JSONObject jsonObject) {
-        DbBuilder dbBuilder = new DbBuilder(modulesPath);
-
-        Iterator<String> iterator = jsonObject.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-
-            DbCommand command = dbBuilder.extractCommand(key);
-            dbBuilder.buildClassInfo(command, null);
-
-            String tableName = dbBuilder.getClassInfo("_table", command, null);
-
-            from(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()));
-            dbBuilder.fromBuilder(command, this, jsonObject.getJSONObject(key));
-        }
     }
 
     public SelectBuilder(String table) {

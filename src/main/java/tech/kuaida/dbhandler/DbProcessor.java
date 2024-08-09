@@ -22,22 +22,57 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.*;
 
-public class DbBuilder {
+public class DbProcessor {
     private String modulesPath;
     private Map<String, Map<String, Map<String, String>>> classInfo; //保存类相关信息
 
     /**
-     * @param modulesPath 模块所在的包路径，例如: tech.tech.kuaida.modules
+     * @param modulesPath 模块所在的包路径，例如: tech.kuaida.modules
      * */
-    public DbBuilder(String modulesPath) {
+    public DbProcessor(String modulesPath) {
         this.modulesPath = modulesPath;
         classInfo = new HashMap<>();
     }
 
-    public Page<Map<String, Object>> subQuery(EntityManager entityManager, Map<String, Map<String, Map<String, String>>> classInfo, String parentId, DbCommand parentCommand, DbCommand command, Map map, JSONObject jsonObject) {
+    /**
+     * 根据传入的JSON对象来生成SQL的查询语句，
+     * @param jsonObject JSON对象
+     * @return SQL查询语句
+     * */
+    public String buildSql(JSONObject jsonObject) {
+        SelectBuilder selectBuilder = new SelectBuilder();
+        Iterator<String> iterator = jsonObject.keySet().iterator();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+
+            DbCommand command = extractCommand(key);
+            buildClassInfo(command, null);
+
+            String tableName = getClassInfo("_table", command, null);
+
+            selectBuilder.from(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()));
+            fromBuilder(command, selectBuilder, jsonObject.getJSONObject(key));
+        }
+        return selectBuilder.toString();
+    }
+
+    /**
+     * 根据JSON结构层级进行遍历，每个层级为一个查询
+     * @param entityManager EntityManager实例
+     * @param parentId 上级对象id
+     * @param parentCommand 上级命令结构
+     * @param command 命令结构
+     * @param map 上级结果对象
+     * @param jsonKey JSON的键
+     * @param jsonObject JSON对象
+     * @return 根据JSON对象进行数据查询，返回查询结果
+     * */
+    public Page<Map<String, Object>> nestedQuery(EntityManager entityManager, String parentId, DbCommand parentCommand, DbCommand command, Map map, String jsonKey, JSONObject jsonObject) {
         SelectBuilder selectBuilder = new SelectBuilder();
 
+        command = extractCommand(jsonKey);
         buildClassInfo(command, null);
+
         String tableName = getClassInfo("_table", command, null);
 
         selectBuilder.from(tableName + " AS " + (command.getAlias() != null?command.getAlias():command.getCode()));
@@ -89,7 +124,7 @@ public class DbBuilder {
                 }
             } else {
                 if (getClassInfo("_column", command, fieldCommand) != null) {
-                    selectBuilder.column(fieldCommand, command.getCode() + "." + getClassInfo("_column", command, fieldCommand), (fieldCommand.getAlias() != null?command.getAlias():command.getCode()));
+                    selectBuilder.column(fieldCommand, command.getCode() + "." + getClassInfo("_column", command, fieldCommand), (fieldCommand.getAlias() != null?fieldCommand.getAlias():getClassInfo("_column", command, fieldCommand)));
                 }
             }
         }
@@ -169,16 +204,14 @@ public class DbBuilder {
 
                     //关联ID不为空则进行子查询
                     if (id != null) {
-                        subQuery(entityManager, classInfo, id, command, fieldCommand, result, waitJson.getJSONObject(key));
+                        nestedQuery(entityManager, id, command, fieldCommand, result, key, waitJson.getJSONObject(key));
                     }
                 }
             }
         }
 
         Page<Map<String, Object>> result = new PageImpl(list, pageable, total.longValue());
-
         return result;
-
     }
 
     public void fromBuilder(DbCommand command, SelectBuilder selectBuilder, JSONObject jsonObject) {
