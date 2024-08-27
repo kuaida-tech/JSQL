@@ -4,7 +4,7 @@
     <groupId>tech.kuaida</groupId>
     <artifactId>JSQL</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>JSQL</name>
     <url>https://github.com/kuaida-tech/JSQL</url>
     <description>Generate SQL query based on JSON</description>

@@ -488,7 +488,7 @@ public class DbProcessor {
                 isRefrence = true;
             }
 
-            Class clazz = Class.forName(modulesPath + "." + classType.toLowerCase() + "." + NcStringUtils.upperFirstCase(classType));
+            Class clazz = Class.forName(modulesPath + "." + classType.toLowerCase() + "." + NcStringUtils.upperFirstCase(classType), true, Thread.currentThread().getContextClassLoader());
             Field[] fields = clazz.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
                 Field field = fields[i];
@@ -508,7 +508,7 @@ public class DbProcessor {
 
                 if (oneToOneAnnotation != null || manyToOneAnnotation != null) {
                     try {
-                        Class targetClass = Class.forName(field.getType().getName());
+                        Class targetClass = Class.forName(field.getType().getName(), true, Thread.currentThread().getContextClassLoader());
                         javax.persistence.Table targetTableAnnotation = (javax.persistence.Table)targetClass.getAnnotation(javax.persistence.Table.class);
                         if (parentTableName.equals(targetTableAnnotation.name())) {
                             JoinColumn joinColumnAnnotation = field.getAnnotation(JoinColumn.class);
@@ -692,7 +692,7 @@ public class DbProcessor {
                 e.printStackTrace();
             }
 
-            Class<?> clazz = Class.forName(modulesPath + "." + classType.toLowerCase() + "." + NcStringUtils.upperFirstCase(classType));
+            Class<?> clazz = Class.forName(modulesPath + "." + classType.toLowerCase() + "." + NcStringUtils.upperFirstCase(classType), true, Thread.currentThread().getContextClassLoader());
 
             javax.persistence.Table tableAnnotation = (javax.persistence.Table)clazz.getAnnotation(javax.persistence.Table.class);
             classMap.put("_table", tableAnnotation.name());

@@ -29,7 +29,7 @@ public final class ClassConverter implements Converter<Class<?>> {
             return null;
         } else {
             try {
-                return Class.forName(className);
+                return Class.forName(className, true, Thread.currentThread().getContextClassLoader());
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }

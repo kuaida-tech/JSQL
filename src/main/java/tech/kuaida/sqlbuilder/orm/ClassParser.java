@@ -60,7 +60,7 @@ public class ClassParser {
                                 Type[] listActualTypeArguments = listGenericType.getActualTypeArguments();
                                 fieldInfo.setClassType(listActualTypeArguments[0].getTypeName());
                             }
-                            Class fieldClass = Class.forName(field.getType().getName());
+                            Class fieldClass = Class.forName(field.getType().getName(), true, Thread.currentThread().getContextClassLoader());
                             javax.persistence.Table fieldTableAnnotation = (javax.persistence.Table)fieldClass.getAnnotation(javax.persistence.Table.class);
                             fieldInfo.setTableName(fieldTableAnnotation.name());
                         } catch (ClassNotFoundException e) {
@@ -76,7 +76,7 @@ public class ClassParser {
 
                         Class fieldClass = null;
                         try {
-                            fieldClass = Class.forName(listActualTypeArguments[0].getTypeName());
+                            fieldClass = Class.forName(listActualTypeArguments[0].getTypeName(), true, Thread.currentThread().getContextClassLoader());
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
                         }
@@ -104,7 +104,7 @@ public class ClassParser {
                         }
 
                         try {
-                            Class fieldClass = Class.forName(fieldInfo.getClassType());
+                            Class fieldClass = Class.forName(fieldInfo.getClassType(), true, Thread.currentThread().getContextClassLoader());
                             javax.persistence.Table fieldTableAnnotation = (javax.persistence.Table)fieldClass.getAnnotation(javax.persistence.Table.class);
                             fieldInfo.setTableName(fieldTableAnnotation.name());
                         } catch (ClassNotFoundException e) {
@@ -160,7 +160,7 @@ public class ClassParser {
     public Class getFieldClass(String fieldName) {
         if (fieldMapping.containsKey(fieldName) && fieldMapping.get(fieldName) != null) {
             try {
-                return Class.forName(fieldMapping.get(fieldName).getClassType());
+                return Class.forName(fieldMapping.get(fieldName).getClassType(), true, Thread.currentThread().getContextClassLoader());
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
                 return null;
